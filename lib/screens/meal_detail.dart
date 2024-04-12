@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:recipes_app/models/meal.dart';
 import 'package:recipes_app/providers/favorites_provider.dart';
@@ -30,18 +31,33 @@ class MealDetailScreen extends ConsumerWidget {
                       ? "Meal added as a favorite."
                       : "Meal removed.")));
             },
-            icon: Icon(isFavorite ? Icons.star : Icons.star_border),
-          )
+            icon: AnimatedSwitcher(
+              duration: const Duration(milliseconds: 300),
+              transitionBuilder: (child, animation) {
+                return RotationTransition(
+                  turns: Tween(begin: 0.9, end: 1.0).animate(animation),
+                  child: child,
+                );
+              },
+              child: Icon(
+                isFavorite ? Icons.star : Icons.star_border,
+                key: ValueKey(isFavorite),
+              ),
+            ),
+          ),
         ],
       ),
       body: SingleChildScrollView(
         child: Column(
           children: [
-            Image.network(
-              meal.imageUrl,
-              height: 300,
-              fit: BoxFit.cover,
-              width: double.infinity,
+            Hero(
+              tag: meal.id,
+              child: Image.network(
+                meal.imageUrl,
+                height: 300,
+                fit: BoxFit.cover,
+                width: double.infinity,
+              ),
             ),
             const SizedBox(height: 14),
             Text("Ingredients",
